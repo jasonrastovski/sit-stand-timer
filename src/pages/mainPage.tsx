@@ -12,8 +12,9 @@ import AlertTitle from "@material-ui/lab/AlertTitle";
 import CloseIcon from "@material-ui/icons/Close";
 import { Timer } from "../modules/timer";
 import { TimeUtils } from "../timeUtils";
-
-const Default_Timer_Value_In_Seconds = 5;
+import { TimerTracking, TIMER_TRACKER } from "./models";
+import _ from "lodash";
+const Default_Timer_Value_In_Seconds = 2;
 
 export const MainPage: React.FunctionComponent = () => {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -29,6 +30,32 @@ export const MainPage: React.FunctionComponent = () => {
       // TODO: (JR) time to make a sound!
 
       setIsTimerRunning(false);
+
+      let existingTimeTrackings = new Array<TimerTracking>();
+
+      const timerTrackingObj = localStorage.getItem(TIMER_TRACKER);
+      if (timerTrackingObj) {
+        existingTimeTrackings = JSON.parse(timerTrackingObj);
+      }
+
+      const timeTrackingForToday = existingTimeTrackings.find(
+        (timerTracking) => timerTracking.date === new Date().toDateString()
+      );
+
+      const updatedTimeTrackings = _.unionBy(
+        [
+          {
+            date: new Date().toDateString(),
+            timerCount: timeTrackingForToday
+              ? timeTrackingForToday.timerCount + 1
+              : 1,
+          },
+        ],
+        existingTimeTrackings,
+        "date"
+      );
+
+      localStorage.setItem(TIMER_TRACKER, JSON.stringify(updatedTimeTrackings));
     }
   }, [timeLeftOnTimerInSeconds]);
 
