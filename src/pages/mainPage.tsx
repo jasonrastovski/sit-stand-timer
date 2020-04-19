@@ -16,7 +16,8 @@ import { TIMER_TRACKER } from "./models";
 import _ from "lodash";
 import { TodayStats } from "../modules/todayStats";
 import { LocalStorageUtils } from "../utils/localStorageUtils";
-const Default_Timer_Value_In_Seconds = 2;
+
+const Default_Timer_Value_In_Seconds = 1500;
 
 export const MainPage: React.FunctionComponent = () => {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
