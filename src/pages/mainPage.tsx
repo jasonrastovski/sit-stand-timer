@@ -12,8 +12,10 @@ import AlertTitle from "@material-ui/lab/AlertTitle";
 import CloseIcon from "@material-ui/icons/Close";
 import { Timer } from "../modules/timer";
 import { TimeUtils } from "../timeUtils";
-import { TimerTracking, TIMER_TRACKER } from "./models";
+import { TIMER_TRACKER } from "./models";
 import _ from "lodash";
+import { TodayStats } from "../modules/todayStats";
+import { LocalStorageUtils } from "../utils/localStorageUtils";
 const Default_Timer_Value_In_Seconds = 2;
 
 export const MainPage: React.FunctionComponent = () => {
@@ -25,21 +27,25 @@ export const MainPage: React.FunctionComponent = () => {
   const [isNotificationOpen, setIsNotificationOpen] = React.useState(false);
 
   useEffect(() => {
+    window.onbeforeunload = () => {
+      return "are you sure you want to leave?";
+    };
+
+    return () => {
+      window.onbeforeunload = null;
+    };
+  }, []);
+
+  useEffect(() => {
     if (timeLeftOnTimerInSeconds === 0) {
       console.log("notifying...");
       // TODO: (JR) time to make a sound!
 
       setIsTimerRunning(false);
 
-      let existingTimeTrackings = new Array<TimerTracking>();
-
-      const timerTrackingObj = localStorage.getItem(TIMER_TRACKER);
-      if (timerTrackingObj) {
-        existingTimeTrackings = JSON.parse(timerTrackingObj);
-      }
-
-      const timeTrackingForToday = existingTimeTrackings.find(
-        (timerTracking) => timerTracking.date === new Date().toDateString()
+      const existingTimeTrackings = LocalStorageUtils.getTimeTracking();
+      const timeTrackingForToday = LocalStorageUtils.getTimeTrackingForToday(
+        existingTimeTrackings
       );
 
       const updatedTimeTrackings = _.unionBy(
@@ -59,11 +65,16 @@ export const MainPage: React.FunctionComponent = () => {
     }
   }, [timeLeftOnTimerInSeconds]);
 
-  const startTimer = () => {
+  const resetMostThings = () => {
     setIsNotificationOpen(false);
+    setTimeLeftOnTimerInSeconds(Default_Timer_Value_In_Seconds);
+    setPercentComplete(0);
+    document.title = "Sit/Stand Timer";
+  };
+
+  const startTimer = () => {
     if (timeLeftOnTimerInSeconds === 0) {
-      setTimeLeftOnTimerInSeconds(Default_Timer_Value_In_Seconds);
-      setPercentComplete(0);
+      resetMostThings();
     }
 
     setIsTimerRunning(true);
@@ -71,8 +82,7 @@ export const MainPage: React.FunctionComponent = () => {
 
   const resetTimer = () => {
     setIsNotificationOpen(false);
-    setTimeLeftOnTimerInSeconds(Default_Timer_Value_In_Seconds);
-    setPercentComplete(0);
+    resetMostThings();
   };
 
   const stopTimer = () => {
@@ -168,6 +178,9 @@ export const MainPage: React.FunctionComponent = () => {
               {TimeUtils.getMinutesAndSeconds(timeLeftOnTimerInSeconds)}
             </Typography>
             <LinearProgress variant="determinate" value={percentComplete} />
+          </Grid>
+          <Grid item>
+            <TodayStats />
           </Grid>
         </Grid>
       </Grid>
