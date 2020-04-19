@@ -1,114 +1,147 @@
 import React, { useState, useEffect } from "react";
-import { Container, Button, Grid } from "@material-ui/core";
-import { useInterval } from "../hooks/useInterval";
+import {
+  Container,
+  Button,
+  Grid,
+  Typography,
+  LinearProgress,
+  IconButton,
+} from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
+import AlertTitle from "@material-ui/lab/AlertTitle";
+import CloseIcon from "@material-ui/icons/Close";
+import { Timer } from "../modules/timer";
+import { TimeUtils } from "../timeUtils";
 
-const Default_Timer_Value_In_Minutes = 0.1;
+const Default_Timer_Value_In_Seconds = 5;
 
 export const MainPage: React.FunctionComponent = () => {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [timeLeftOnTimerInSeconds, setTimeLeftOnTimerInSeconds] = useState(
-    Default_Timer_Value_In_Minutes * 60
+    Default_Timer_Value_In_Seconds
   );
-
-  useEffect(() => {
-    askUserPermission();
-  }, []);
+  const [percentComplete, setPercentComplete] = React.useState(0);
+  const [isNotificationOpen, setIsNotificationOpen] = React.useState(false);
 
   useEffect(() => {
     if (timeLeftOnTimerInSeconds === 0) {
       console.log("notifying...");
-      notifyMe();
+      // TODO: (JR) time to make a sound!
+
+      setIsTimerRunning(false);
     }
   }, [timeLeftOnTimerInSeconds]);
 
-  useInterval(() => {
-    if (isTimerRunning && timeLeftOnTimerInSeconds > 0) {
-      console.log("timeLeftOnTimerInSeconds", timeLeftOnTimerInSeconds);
-      setTimeLeftOnTimerInSeconds(timeLeftOnTimerInSeconds - 1);
-    }
-  }, 1000);
-
   const startTimer = () => {
+    setIsNotificationOpen(false);
     if (timeLeftOnTimerInSeconds === 0) {
-      setTimeLeftOnTimerInSeconds(Default_Timer_Value_In_Minutes * 60);
+      setTimeLeftOnTimerInSeconds(Default_Timer_Value_In_Seconds);
+      setPercentComplete(0);
     }
 
     setIsTimerRunning(true);
+  };
+
+  const resetTimer = () => {
+    setIsNotificationOpen(false);
+    setTimeLeftOnTimerInSeconds(Default_Timer_Value_In_Seconds);
+    setPercentComplete(0);
   };
 
   const stopTimer = () => {
     setIsTimerRunning(false);
   };
 
-  const getMinutesAndSeconds = () => {
-    const minutes = Math.floor(timeLeftOnTimerInSeconds / 60);
-
-    const seconds = timeLeftOnTimerInSeconds - minutes * 60;
-
-    return `${minutes
-      .toString()
-      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-  };
-
-  function askUserPermission() {
-    Notification.requestPermission();
-    console.log("here");
-    var n = new Notification("Title", { body: "I am the body text!" });
-  }
-
-  function notifyMe() {
-    // Let's check if the browser supports notifications
-
-    if (!("Notification" in window)) {
-      console.log("This browser does not support notifications.");
-      alert("This browser does not support desktop notification");
-    }
-    // Let's check whether notification permissions have already been granted
-    else if (Notification.permission === "granted") {
-      // If it's okay let's create a notification
-      console.log("we doing");
-      var notification = new Notification("Hi there!");
-    }
-    // Otherwise, we need to ask the user for permission
-    else if (Notification.permission !== "denied") {
-      Notification.requestPermission().then(function (permission) {
-        // If the user accepts, let's create a notification
-        if (permission === "granted") {
-          var notification = new Notification("Hi there!");
-        }
-      });
-    }
-
-    // At last, if the user has denied notifications, and you
-    // want to be respectful there is no need to bother them any more.
-  }
-
   return (
-    <Container maxWidth="md">
-      <Grid container>
-        <Grid item xs={12}>
-          Sit/Stand Timer
+    <Container maxWidth="sm" className={"sit-stand-container"}>
+      {isTimerRunning && (
+        <Timer
+          isTimerRunning={isTimerRunning}
+          timeLeftOnTimerInSeconds={timeLeftOnTimerInSeconds}
+          defaultTimeValueInSeconds={Default_Timer_Value_In_Seconds}
+          setTimeLeftOnTimerInSeconds={setTimeLeftOnTimerInSeconds}
+          setIsNotificationOpen={setIsNotificationOpen}
+          setPercentComplete={setPercentComplete}
+        />
+      )}
+
+      <Grid
+        container
+        direction="row"
+        justify="center"
+        alignItems="center"
+        spacing={2}
+      >
+        {isNotificationOpen && (
+          <Grid item xs={12}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setIsNotificationOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              <AlertTitle>Timer Complete!</AlertTitle>
+              Congrats!
+            </Alert>
+          </Grid>
+        )}
+        <Grid item>
+          <Typography variant={"h5"}>Sit/Stand Timer</Typography>
         </Grid>
-        <Grid item xs={6}>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={isTimerRunning}
-            onClick={startTimer}
-          >
-            Start Timer
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            disabled={!isTimerRunning}
-            onClick={stopTimer}
-          >
-            Stop Timer
-          </Button>
-        </Grid>
-        <Grid item xs={6}>
-          {getMinutesAndSeconds()}
+        <Grid
+          container
+          spacing={2}
+          direction="column"
+          justify="center"
+          alignItems="center"
+        >
+          <Grid item container spacing={2} justify={"center"}>
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={isTimerRunning}
+                onClick={startTimer}
+              >
+                Start
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                color="secondary"
+                disabled={isTimerRunning}
+                onClick={resetTimer}
+              >
+                Reset
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                color="secondary"
+                disabled={!isTimerRunning}
+                onClick={stopTimer}
+              >
+                Stop
+              </Button>
+            </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant={"h1"}>
+              {TimeUtils.getMinutesAndSeconds(timeLeftOnTimerInSeconds)}
+            </Typography>
+            <LinearProgress variant="determinate" value={percentComplete} />
+          </Grid>
         </Grid>
       </Grid>
     </Container>
