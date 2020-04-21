@@ -1,6 +1,7 @@
 export interface TimerTracking {
   date: string;
-  timerCount: number;
+  standingTimerCount: number;
+  sittingTimerCount: number;
 }
 
 export const TIMER_TRACKER = "TIMER_TRACKER";

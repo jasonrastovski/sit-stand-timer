@@ -6,18 +6,22 @@ import {
   Typography,
   LinearProgress,
   IconButton,
+  Switch,
+  Tooltip,
 } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import AlertTitle from "@material-ui/lab/AlertTitle";
 import CloseIcon from "@material-ui/icons/Close";
 import { Timer } from "../modules/timer";
 import { TimeUtils } from "../timeUtils";
-import { TIMER_TRACKER } from "./models";
+import { TIMER_TRACKER, TimerTracking } from "./models";
 import _ from "lodash";
 import { TodayStats } from "../modules/todayStats";
 import { LocalStorageUtils } from "../utils/localStorageUtils";
+import AccessibilityIcon from "@material-ui/icons/Accessibility";
+import AirlineSeatReclineNormalIcon from "@material-ui/icons/AirlineSeatReclineNormal";
 
-const Default_Timer_Value_In_Seconds = 1500;
+const Default_Timer_Value_In_Seconds = 3;
 
 export const MainPage: React.FunctionComponent = () => {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -26,6 +30,7 @@ export const MainPage: React.FunctionComponent = () => {
   );
   const [percentComplete, setPercentComplete] = React.useState(0);
   const [isNotificationOpen, setIsNotificationOpen] = React.useState(false);
+  const [isStanding, setIsStanding] = React.useState(true);
 
   useEffect(() => {
     window.onbeforeunload = () => {
@@ -39,7 +44,6 @@ export const MainPage: React.FunctionComponent = () => {
 
   useEffect(() => {
     if (timeLeftOnTimerInSeconds === 0) {
-      console.log("notifying...");
       // TODO: (JR) time to make a sound!
 
       setIsTimerRunning(false);
@@ -53,10 +57,13 @@ export const MainPage: React.FunctionComponent = () => {
         [
           {
             date: new Date().toDateString(),
-            timerCount: timeTrackingForToday
-              ? timeTrackingForToday.timerCount + 1
-              : 1,
-          },
+            sittingTimerCount:
+              (timeTrackingForToday?.sittingTimerCount ?? 0) +
+              (!isStanding ? 1 : 0),
+            standingTimerCount:
+              (timeTrackingForToday?.standingTimerCount ?? 0) +
+              (isStanding ? 1 : 0),
+          } as TimerTracking,
         ],
         existingTimeTrackings,
         "date"
@@ -88,6 +95,10 @@ export const MainPage: React.FunctionComponent = () => {
 
   const stopTimer = () => {
     setIsTimerRunning(false);
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsStanding(event.target.checked);
   };
 
   return (
@@ -142,6 +153,31 @@ export const MainPage: React.FunctionComponent = () => {
           justify="center"
           alignItems="center"
         >
+          <Grid item>
+            <Grid component="label" container alignItems="center" spacing={1}>
+              <Grid item>
+                <Tooltip title="sitting" placement="left">
+                  <AirlineSeatReclineNormalIcon
+                    color={isStanding ? "disabled" : "action"}
+                  />
+                </Tooltip>
+              </Grid>
+              <Grid item>
+                <Switch
+                  checked={isStanding}
+                  onChange={handleChange}
+                  name="isStanding"
+                />
+              </Grid>
+              <Grid item>
+                <Tooltip title="standing" placement="right">
+                  <AccessibilityIcon
+                    color={isStanding ? "action" : "disabled"}
+                  />
+                </Tooltip>
+              </Grid>
+            </Grid>
+          </Grid>
           <Grid item container spacing={2} justify={"center"}>
             <Grid item>
               <Button

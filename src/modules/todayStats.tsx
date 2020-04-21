@@ -7,9 +7,16 @@ export const TodayStats: React.FunctionComponent = () => {
 
   if (timeTrackingForToday !== undefined) {
     return (
-      <Typography variant={"body2"}>
-        Numer of times timer has hit zero: {timeTrackingForToday.timerCount}
-      </Typography>
+      <>
+        <Typography variant={"body2"}>
+          Number of times sitting today:{" "}
+          {timeTrackingForToday.sittingTimerCount}
+        </Typography>
+        <Typography variant={"body2"}>
+          Number of times standing today:{" "}
+          {timeTrackingForToday.standingTimerCount}
+        </Typography>
+      </>
     );
   }
 

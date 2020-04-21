@@ -23,7 +23,6 @@ export const Timer = (props: TimerProps) => {
   } = props;
 
   useInterval(() => {
-    console.log("tick");
     if (isTimerRunning && timeLeftOnTimerInSeconds > 0) {
       setTimeLeftOnTimerInSeconds(timeLeftOnTimerInSeconds - 1);
     }
