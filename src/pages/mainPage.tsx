@@ -20,6 +20,7 @@ import { TodayStats } from "../modules/todayStats";
 import { LocalStorageUtils } from "../utils/localStorageUtils";
 import AccessibilityIcon from "@material-ui/icons/Accessibility";
 import AirlineSeatReclineNormalIcon from "@material-ui/icons/AirlineSeatReclineNormal";
+import UIfx from "uifx";
 
 const Default_Timer_Value_In_Seconds = 1500;
 
@@ -44,7 +45,15 @@ export const MainPage: React.FunctionComponent = () => {
 
   useEffect(() => {
     if (timeLeftOnTimerInSeconds === 0) {
-      // TODO: (JR) time to make a sound!
+      const bell = new UIfx(
+        "https://freesound.org/data/previews/258/258179_4486188-lq.mp3",
+        {
+          volume: 0.8, // number between 0.0 ~ 1.0
+          throttleMs: 100,
+        }
+      );
+
+      bell.play();
 
       setIsTimerRunning(false);
 
