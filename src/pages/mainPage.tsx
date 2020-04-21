@@ -21,7 +21,7 @@ import { LocalStorageUtils } from "../utils/localStorageUtils";
 import AccessibilityIcon from "@material-ui/icons/Accessibility";
 import AirlineSeatReclineNormalIcon from "@material-ui/icons/AirlineSeatReclineNormal";
 
-const Default_Timer_Value_In_Seconds = 3;
+const Default_Timer_Value_In_Seconds = 1500;
 
 export const MainPage: React.FunctionComponent = () => {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
