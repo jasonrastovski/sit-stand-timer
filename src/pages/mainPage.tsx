@@ -23,7 +23,7 @@ import AirlineSeatReclineNormalIcon from "@material-ui/icons/AirlineSeatReclineN
 import UIfx from "uifx";
 import { AllData } from "../modules/allData";
 
-const Default_Timer_Value_In_Seconds = 10;
+const Default_Timer_Value_In_Seconds = 1500;
 
 export const MainPage: React.FunctionComponent = () => {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
