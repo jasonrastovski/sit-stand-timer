@@ -80,7 +80,7 @@ export const MainPage: React.FunctionComponent = () => {
 
       localStorage.setItem(TIMER_TRACKER, JSON.stringify(updatedTimeTrackings));
     }
-  }, [timeLeftOnTimerInSeconds]);
+  }, [timeLeftOnTimerInSeconds, isStanding]);
 
   const resetMostThings = () => {
     setIsNotificationOpen(false);

@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useInterval } from "../hooks/useInterval";
 import { TimeUtils } from "../timeUtils";
 
