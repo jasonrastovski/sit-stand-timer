@@ -21,8 +21,9 @@ import { LocalStorageUtils } from "../utils/localStorageUtils";
 import AccessibilityIcon from "@material-ui/icons/Accessibility";
 import AirlineSeatReclineNormalIcon from "@material-ui/icons/AirlineSeatReclineNormal";
 import UIfx from "uifx";
+import { AllData } from "../modules/allData";
 
-const Default_Timer_Value_In_Seconds = 1500;
+const Default_Timer_Value_In_Seconds = 10;
 
 export const MainPage: React.FunctionComponent = () => {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -227,6 +228,9 @@ export const MainPage: React.FunctionComponent = () => {
           </Grid>
           <Grid item>
             <TodayStats />
+          </Grid>
+          <Grid item>
+            <AllData />
           </Grid>
         </Grid>
       </Grid>
